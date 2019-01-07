@@ -1,6 +1,11 @@
 language: java
 jdk: oraclejdk8
 
+# Cache the .m2 folder to prevent redownloading dependencies on each build
+cache:
+  directories:
+  - "$HOME/.m2/repository"
+
 # Define the services to use
 services:
   - docker
@@ -14,3 +19,4 @@ before_install:
 script:
   - mvn verify
 
+secure: "uLGTWlG4blbLnFvhd7EO1QvUQuUfIf/HBH6WatLXAVybKYkVXXnoXqkZeh8UY4y1cDyDzNis588WSZEAQNEo1wCLig0+ZzO2QQszuET9hAEg0Z8P/GYDzV4c0jHASDFDnSTpjaej1GwB7BkIv1kmXtjKonZp8nygSI6Cm2fn0GwuYeF91fZGhzCwpnLyMrijq/IaikrqGmkVg867UqSpdjOoCH9dXu7t2/6SQkRCkGbHN5jC00KgFU8qQi5VTehGi0VDxjz3C+utsnSVb5CMaTJm+26/uCEeNDXZRuGe0y+HBsQqMsdPlbrGl/YIeKQ+ppa3Q9Ak7TRLPFdJoLDTJrLDNpD89Qnw2ryG+txNxmKl1vCc62NEp0Di1Tw/bNzNuckz/kGZ8NS2lz4W56gPREhxZwc7V3MPK7ymAE1VGX2k68yV3djLaWsW2km9rEIWgJPRp009sVmsMVFfz47KfGu350YPaH/AB04dmJGb+EtY6F+GtKYEA7HXEjU5vrnNGuoxk9Pue+LhoFSflITRNXUCjRuswPXFSsYiQ/f0e83Sii7DdMQcAx0k+LGy9GWm/m5FXkL6GI9kI7t8881swFGc9F6OY8VXAVoZBMBn1CLkpXcTNnQVicCTKBiRgTrQ0L6cdMzWyJnHO5VvDcL0dfmeJ0VliyEpv6Di4l8aZ7U="
