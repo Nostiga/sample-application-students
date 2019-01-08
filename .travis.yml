@@ -1,33 +1,36 @@
 language: java
 jdk: oraclejdk8
-
-# Cache the .m2 folder to prevent redownloading dependencies on each build
 cache:
   directories:
   - "$HOME/.m2/repository"
-
-# Define the services to use
 services:
-  - docker
-
+- docker
 before_install:
-  - sudo service mysql stop
-  - docker pull takimatraining/devops-training-db
-  - docker run -d -p 127.0.0.1:3306:3306 takimatraining/devops-training-db
-
-# Run Unit Test and Integration Tests
+- openssl aes-256-cbc -K $encrypted_cde168f57e0b_key -iv $encrypted_cde168f57e0b_iv
+  -in id_rsa_insa_training.enc -out ~\/.ssh/id_rsa_insa_training -d
+- sudo service mysql stop
+- docker pull takimatraining/devops-training-db
+- docker run -d -p 127.0.0.1:3306:3306 takimatraining/devops-training-db
 script:
-  - mvn verify
-
-# The pipe (|) is useful to create multiline scripts
-script:
-  - |
-    mvn clean install sonar:sonar \
-      -Dsonar.projectKey=Nostiga_sample-application-students \
-      -Dsonar.organization=nostiga-github \
-      -Dsonar.host.url=https://sonarcloud.io \
-      -Dsonar.login=$SONAR_TOKEN #b4b671e94e8b7f85a2ff1107a95b0e97d8da5274
-
+- |
+  mvn clean install sonar:sonar \
+    -Dsonar.projectKey=Nostiga_sample-application-students \
+    -Dsonar.organization=nostiga-github \
+    -Dsonar.host.url=https://sonarcloud.io \
+    -Dsonar.login=$SONAR_TOKEN #b4b671e94e8b7f85a2ff1107a95b0e97d8da5274
+notifications:
+  email:
+    on_failure: always
+after_success:
+- docker login -u $DOCKER_USER -p $DOCKER_PASS
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH;
+  fi`
+- export IMAGE_NAME=Nostiga/sample-application
+- docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
+- docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
+- docker push $IMAGE_NAME:$TAG
 env:
   global:
-    - secure: "uLGTWlG4blbLnFvhd7EO1QvUQuUfIf/HBH6WatLXAVybKYkVXXnoXqkZeh8UY4y1cDyDzNis588WSZEAQNEo1wCLig0+ZzO2QQszuET9hAEg0Z8P/GYDzV4c0jHASDFDnSTpjaej1GwB7BkIv1kmXtjKonZp8nygSI6Cm2fn0GwuYeF91fZGhzCwpnLyMrijq/IaikrqGmkVg867UqSpdjOoCH9dXu7t2/6SQkRCkGbHN5jC00KgFU8qQi5VTehGi0VDxjz3C+utsnSVb5CMaTJm+26/uCEeNDXZRuGe0y+HBsQqMsdPlbrGl/YIeKQ+ppa3Q9Ak7TRLPFdJoLDTJrLDNpD89Qnw2ryG+txNxmKl1vCc62NEp0Di1Tw/bNzNuckz/kGZ8NS2lz4W56gPREhxZwc7V3MPK7ymAE1VGX2k68yV3djLaWsW2km9rEIWgJPRp009sVmsMVFfz47KfGu350YPaH/AB04dmJGb+EtY6F+GtKYEA7HXEjU5vrnNGuoxk9Pue+LhoFSflITRNXUCjRuswPXFSsYiQ/f0e83Sii7DdMQcAx0k+LGy9GWm/m5FXkL6GI9kI7t8881swFGc9F6OY8VXAVoZBMBn1CLkpXcTNnQVicCTKBiRgTrQ0L6cdMzWyJnHO5VvDcL0dfmeJ0VliyEpv6Di4l8aZ7U="
+  - secure: uLGTWlG4blbLnFvhd7EO1QvUQuUfIf/HBH6WatLXAVybKYkVXXnoXqkZeh8UY4y1cDyDzNis588WSZEAQNEo1wCLig0+ZzO2QQszuET9hAEg0Z8P/GYDzV4c0jHASDFDnSTpjaej1GwB7BkIv1kmXtjKonZp8nygSI6Cm2fn0GwuYeF91fZGhzCwpnLyMrijq/IaikrqGmkVg867UqSpdjOoCH9dXu7t2/6SQkRCkGbHN5jC00KgFU8qQi5VTehGi0VDxjz3C+utsnSVb5CMaTJm+26/uCEeNDXZRuGe0y+HBsQqMsdPlbrGl/YIeKQ+ppa3Q9Ak7TRLPFdJoLDTJrLDNpD89Qnw2ryG+txNxmKl1vCc62NEp0Di1Tw/bNzNuckz/kGZ8NS2lz4W56gPREhxZwc7V3MPK7ymAE1VGX2k68yV3djLaWsW2km9rEIWgJPRp009sVmsMVFfz47KfGu350YPaH/AB04dmJGb+EtY6F+GtKYEA7HXEjU5vrnNGuoxk9Pue+LhoFSflITRNXUCjRuswPXFSsYiQ/f0e83Sii7DdMQcAx0k+LGy9GWm/m5FXkL6GI9kI7t8881swFGc9F6OY8VXAVoZBMBn1CLkpXcTNnQVicCTKBiRgTrQ0L6cdMzWyJnHO5VvDcL0dfmeJ0VliyEpv6Di4l8aZ7U=
+  - secure: pT/1RzX/odDZNiSWtkMPHHQHRAH5I8B7q2n5UQtX11d2Mwg3BMvRnK1+qBPE2/JTtD7Coe4ioVUJVScHR2SZNGjliQyXYNBTy/uzHpOBFigm9LHGuCYxkPUUeW52kXD7DIzZz6GAL4m7UgSnG64C6fWfrKtj2maR2tfrB3VhkpQl8MxZ6v2GfyNHr0qS8R4MUx1TS+06eHQNlvHCz8hehbmbCk94LCzc2PHhkEYQrCDId0kPoKr/FNxBXs6brict99ooha6YgcW6SUDJ1Z4woyQtLevoreRPiNqWiYtmMgVV7YKgAzlB4NtlC0vlOclcbKzJ1J/HfcvZJD0mt29Ydn2j04g6eY5ob2aD6YIoJTLwSs/QXvJ8H83vzH5Tv+d/c2mKlxS3+nMozaR2sxoBBwy2FJ3qDUklJ2Of6oG4yEyG7Yi0u446xbzuLMdALtFV1e9vTypxCV6L2/J/r6mA59BcEMT/79Rqz4q1KXwscllXbKJHy1PVNJZ/J98IRKHVDjQ9GVj3Qkg7lEWi9Oz0eWVeXWZZ+vYK0ql75v4Tt8bVTBy27s0ZMbPrqxjqwdSScqgfgbR4RBxQP/kGSqjY2tA698EAf7bPQFXUZPKciAtWUxcNEq6qzJWCM6aw82HEPAq5RMVG34fVb5+XQnVMtM0ikD6Rw6K+UudntABiLYQ=
+  - secure: FksiMVX5u4OcFhhQ0VGAEX2dIvYapxdhSCJl3mhCsqrxs+Di16VG33vMGzYcW3wm7tT30oD0IL0g1FY3cFdm13AyoLIge4d2GueZs3LMmPjuCxbIB9Yblb3T329zi0OIuaxs88fz1MqKOk3Xy83bxmGZTJeM2ojzcQ/JuS+DIDAAlXSBQTPV3Z6p5r04hkJQW1AHL3MhI9+VWzCKGYrs63JTgWEX6qLKugIiV+dtab+iW+jmibZreY+IaY+VWAadg6lxYQ8Uxsk9GOZDda4lUMcHpcvPWLSO4e5bVlL5Ke5S78F+pWpJRRu/kRIyZfI028VlC673WCDSSU0NlNnUoL4ZLHpDCnlZlOAzkhFvcV+yTK1PHLCkxp41pmEOJHgdU63jE8vKNNMJpx/QZa7uIaTq4P2jGi/rpwEimW67AB/lW2z0SQ7WkfdA0hg7cf0i/q/wxNruMCF0KupY+LfmZ9eGU0C/DIGTcMqNXuv/7IfEnHaKKpfO9YaSbjWYoW+WQ8DUiXjpVKA1UJeNVuqUNC7kqxxUVWJmklMObo/bfy8HlOySwHDf9ksWe7P1XZbjPPMIUoKSv/tG6NKbODuGvsqAxuNnmbkg/lh277I1mXj3IihuEnmV+/pPaxpm+CZlI3T7z+3eRoS13Qsy8AbjnE3PS5saRyw7A1cCWCcUcwE=
