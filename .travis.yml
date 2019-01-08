@@ -21,11 +21,11 @@ before_install:
 
 script:
   - |
-  mvn clean install sonar:sonar \
-    -Dsonar.projectKey=Nostiga_sample-application-students \
-    -Dsonar.organization=nostiga-github \
-    -Dsonar.host.url=https://sonarcloud.io \
-    -Dsonar.login=$SONAR_TOKEN #b4b671e94e8b7f85a2ff1107a95b0e97d8da5274
+    mvn clean install sonar:sonar \
+      -Dsonar.projectKey=Nostiga_sample-application-students \
+      -Dsonar.organization=nostiga-github \
+      -Dsonar.host.url=https://sonarcloud.io \
+      -Dsonar.login=$SONAR_TOKEN #b4b671e94e8b7f85a2ff1107a95b0e97d8da5274
     
 notifications:
   email:
