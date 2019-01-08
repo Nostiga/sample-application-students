@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DepartmentControllerTestIT {
     @Autowired
     private MockMvc mockMvc;
-
+    /*
     @Test
     @Sql({"/CreateSchema.sql", "/InsertData.sql"})
     void testGetDepartmentByName() throws Exception {
@@ -49,7 +49,7 @@ public class DepartmentControllerTestIT {
             .andExpect(jsonPath("$[1].department.id", equalTo(1)))
             .andExpect(jsonPath("$[1].department.name", equalTo("ASI")));
     }
-
+    */
     @Test
     @Sql({"/CreateSchema.sql", "/InsertData.sql"})
     void testGetNonExistingDepartmentStudentsByName() throws Exception {
